@@ -1,19 +1,36 @@
-#!/bin/sh
+#!/usr/bin/env bash
+
+# `xrandr` takes a decimal as an argument
+# if the brightness arg is 100%, then there is no need for decimal
+# otherwise, represent as decimal
+if [[ "$1" == 10 ]]; then
+    percent="1"
+else
+    percent="0.${1}"
+fi
+
+# if the second arg exists, and is `night`, then set "night light"
+# otherwise, keep gamma levels the same
+if [[ "$2" == "night" ]]; then
+    gamma="1.0:0.95:0.85"
+else
+    gamma="1.0:1.0:1.0"
+fi
 
 export DISPLAY=:0
 
-m1="HDMI-1"
+mon=$(xrandr | grep " connected")
+mon=(${mon[@]%% *})
 
 notif() {
-    notify-send -t 3000 "Brightness adjusted!"
+    # `-h string:bgcolor:#ebcb8b`
+    notify-send -t 3000 "Brightness adjusted to ${1}0%!"
 }
 
-[ "$1" = "" ] && echo "Please provide a value between 1 and 10 for the brightness." && exit 1
+dim() {
+    while read m; do
+        xrandr --output "$m" --brightness "$percent" --gamma "$gamma"
+    done <<<"$mon"
+}
 
-[[ "$1" -ge 10 ]] && bright="1" || bright="0.$1"
-[[ "$1" -le 0 ]] && bright="0.5"
-
-[ "$2" = night ] && gamma="1.0:0.95:0.85" || gamma="1.0:1.0:1.0"
-
-xrandr --output "$m1" --brightness "$bright" --gamma "$gamma" && \
-    notif
+dim && notif "$1"
