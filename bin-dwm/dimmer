@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+# Name:     dimmer
+# Author:   David Vogel <david@davidvogel.xyz>
+# Date:     2025 Feb 19, Wed
+# License:  GPL v3.0
+# Desc:     `dimmer` is a utility for dimming the screen. Also, "night light".
+
 # `xrandr` takes a decimal as an argument
 # if the brightness arg is 100%, then there is no need for decimal
 # otherwise, represent as decimal
@@ -18,7 +24,6 @@ else
 fi
 
 export DISPLAY=:0
-
 mon=$(xrandr | grep " connected")
 mon=(${mon[@]%% *})
 
