@@ -39,11 +39,11 @@ case $BLOCK_BUTTON in
     2) notify-send -u low "$icon Updating..." "Updating $name price..." ; updateme="1" ; showupdate="1" ;;
     3) uptime="$(date -d "$filestat" '+%D at %T' | sed "s|$(date '+%D')|Today|")"
         notify-send "$icon $name module" "\- <b>Exact price: \$$(cat "$pricefile")</b>
-        - Left click for chart of changes.
-        - Middle click to update.
-        - Shows 🔃 if updating prices.
-        - <b>Last updated:
-        $uptime</b>" ;;
+- Left click for chart of changes.
+- Middle click to update.
+- Shows 🔃 if updating prices.
+- <b>Last updated:
+$uptime</b>" ;;
     6) "$TERMINAL" -e "$EDITOR" "$0" ;;
 esac
 
