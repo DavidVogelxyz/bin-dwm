@@ -1,0 +1,8 @@
+# at 06:00, night light OFF
+0 6 * * * ${HOME}/.local/bin/bin-dwm/dimmer 10
+
+# at 21:00, night light ON
+0 21 * * * ${HOME}/.local/bin/bin-dwm/dimmer 10 night
+
+# at 22:00, night light ON and 90% brightness
+0 22 * * * ${HOME}/.local/bin/bin-dwm/dimmer 9 night
