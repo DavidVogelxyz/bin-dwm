@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+# Name:     backlight-check
+# Author:   David Vogel <david@davidvogel.xyz>
+# Date:     2025 Oct 5, Sun
+# License:  GPL v3.0
+# Desc:     `backlight-check` attempts to set backlight values to the max.
+
+backlight_dir="/sys/class/backlight"
+
+for d in $backlight_dir/*; do
+    echo "[INFO]: Checking backlight value for \`${d##*/}\`."
+
+    # Get paths for files
+    curr_bright="${d}/brightness"
+    max_bright="${d}/max_brightness"
+
+    # Get values from files
+    actual=$(cat "$curr_bright")
+    maximum=$(cat "$max_bright")
+
+    # If not equal, change
+    if ! ((actual == maximum)); then
+        echo "[INFO]: The backlight for \`${d##*/}\` isn't maxed. Attempting to max out..."
+
+        # Make change successfully, or warn user
+        echo "$maximum" | sudo tee "$curr_bright" > /dev/null 2>&1 \
+            && echo "[INFO]: The backlight for \`${d##*/}\` was successfully maxed!" \
+            || echo "[WARN]: Failed to update brightness for \`${d##*/}\`."
+        continue
+    fi
+
+    # If equal, let user know
+    echo "[INFO]: The backlight for \`${d##*/}\` is already maxed!"
+done
