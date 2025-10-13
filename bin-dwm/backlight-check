@@ -8,7 +8,15 @@
 
 backlight_dir="/sys/class/backlight"
 
-for d in $backlight_dir/*; do
+for d in ${backlight_dir}/*; do
+    # If there are no devices or drives, then status and exit.
+    if [[ "${d##*/}" == "*" ]]; then
+        echo "[INFO]: The script did not find any devices or drivers in \`${backlight_dir}\`."
+        echo "[INFO]: This is generally true when the display is a monitor and not a laptop screen."
+        echo "[INFO]: Exiting now."
+        exit 0
+    fi
+
     echo "[INFO]: Checking backlight value for \`${d##*/}\`."
 
     # Get paths for files
