@@ -6,11 +6,13 @@
 # License:  GPL v3.0
 # Desc:     `recompile-wm` is a script for recompiling software for DWM.
 
+SRC_DIR="${HOME}/.local/src"
+
 list_to_recompile=(
-    "${HOME}/.local/src/dmenu"
-    "${HOME}/.local/src/dwm"
-    "${HOME}/.local/src/dwmblocks"
-    "${HOME}/.local/src/st"
+    "dmenu"
+    "dwm"
+    "dwmblocks"
+    "st"
 )
 
 error() {
@@ -20,14 +22,16 @@ error() {
 
 recompile-loop() {
     for d in "${list_to_recompile[@]}"; do
-        cd "$d"
+        if [[ -d "${SRC_DIR}/${d}" ]]; then
+            cd "${SRC_DIR}/${d}"
 
-        echo "[INFO]: Recompiling \`${d##*/}\`..."
-        sudo make install > /dev/null 2>&1 \
-            && echo "[INFO]: Successfully recompiled \`${d##*/}\`!" \
-            || error "[ERROR]: Failed to recompile \`${d##*/}\`. Exiting now."
+            echo "[INFO]: Recompiling \`${d}\`..."
+            sudo make install > /dev/null 2>&1 \
+                && echo "[INFO]: Successfully recompiled \`${d}\`!" \
+                || error "[ERROR]: Failed to recompile \`${d}\`. Exiting now."
 
-        cd - > /dev/null 2>&1
+            cd - > /dev/null 2>&1
+        fi
     done
 }
 
