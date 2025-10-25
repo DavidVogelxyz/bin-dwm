@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+# Name:     renew-dwmblocks
+# Author:   David Vogel <david@davidvogel.xyz>
+# Date:     2025 Oct 24, Fri
+# License:  GPL v3.0
+# Desc:     `renew-dwmblocks` is a script that refreshes `dwmblocks`
+
+if [[ "$(command -v dwmblocks)" ]]; then
+    killall -q dwmblocks
+    setsid -f dwmblocks
+    echo "[INFO]: \`dwmblocks\` has been restarted!"
+fi
