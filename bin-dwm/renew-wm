@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+# Name:     renew-wm
+# Author:   David Vogel <david@davidvogel.xyz>
+# Date:     2025 Oct 24, Fri
+# License:  GPL v3.0
+# Desc:     `renew-wm` is a script that refreshes the WM, while keeping windows open
+
+export WM="dwm"
+
+# This function can handle any number of instances of the window manager.
+wmpid() {
+    tree="$(pstree -ps $$)"
+    tree="${tree#*$WM(}"
+    echo "${tree%%)*}"
+}
+
+if [[ "$(command -v "$WM")" ]]; then
+    kill -HUP "$(wmpid)"
+    echo "[INFO]: \`${WM}\` has been renewed!"
+fi
