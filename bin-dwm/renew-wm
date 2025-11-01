@@ -8,14 +8,28 @@
 
 export WM="dwm"
 
-# This function can handle any number of instances of the window manager.
+# This function determines the PID of the correct WM instance (in case there's multiple)
 wmpid() {
     tree="$(pstree -ps $$)"
     tree="${tree#*$WM(}"
     echo "${tree%%)*}"
 }
 
+# `renew-wm` only runs if the WM is a command on the system
 if [[ "$(command -v "$WM")" ]]; then
-    kill -HUP "$(wmpid)"
-    echo "[INFO]: \`${WM}\` has been renewed!"
+    PID_WM="$(wmpid)"
+
+    # `$PID_WM` must be NUMBERS ONLY, or the script fails
+    if ! [[ "$PID_WM" =~ ^[0-9]+$ ]]; then
+        echo -e \
+            "[WARN]: \`${PID_WM}\` is not a valid PID. This may have occurred because \`renew-wm\` was run within \`tmux\`." \
+            "\n[WARN]: To resolve, either run \`renew-wm\` outside of \`tmux\`, or use the \"renew\" function found within \`sysact\`." \
+            "\n[ERROR]: Exiting now."
+        exit 1
+    fi
+
+    # Sends SIGHUP to `$PID_WM` and prints status message
+    kill -HUP "$PID_WM" \
+        && echo "[INFO]: \`${WM}\` has been renewed!" \
+        || echo "[WARN]: Something went wrong when renewing \`${WM}\`."
 fi
