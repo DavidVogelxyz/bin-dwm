@@ -35,7 +35,7 @@ notif() {
 dim() {
     while read m; do
         xrandr --output "$m" --brightness "$percent" --gamma "$gamma"
-    done <<<"$mon"
+    done <<< "$mon"
 }
 
 dim && notif "$1"
