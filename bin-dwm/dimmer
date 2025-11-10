@@ -29,7 +29,11 @@ mon=(${mon[@]%% *})
 
 notif() {
     # `-h string:bgcolor:#ebcb8b`
-    notify-send -t 3000 "Brightness adjusted to ${1}0%!"
+    if [[ "$2" == "night" ]]; then
+        notify-send -e -t 3000 "Dimmer" "Night -- brightness adjusted to ${1}0%!"
+    else
+        notify-send -e -t 3000 "Dimmer" "Brightness adjusted to ${1}0%!"
+    fi
 }
 
 dim() {
@@ -38,4 +42,4 @@ dim() {
     done <<< "$mon"
 }
 
-dim && notif "$1"
+dim && notif "$1" "$2"
