@@ -15,6 +15,7 @@ Table of contents
 - [Scripts](#scripts)
     - [backlight-check](#backlight-check)
     - [dimmer](#dimmer)
+    - [dmenuunicode](#dmenuunicode)
     - [recompile-wm](#recompile-wm)
     - [renew-dwmblocks](#renew-dwmblocks)
     - [renew-wm](#renew-wm)
@@ -37,6 +38,14 @@ Date created: 2025 Feb 19, Wed
 `dimmer` was written to give `dwm` a "night light" feature.
 
 `dimmer` was heavily inspired by a similar script written by YouTuber BreadOnPenguins. This repo includes an example cronjob for scheduling the night light functions. The script accepts up to 2 arguments: the screen brightness (as a percent, divided by 10) and a second (optional) argument to specify "night" colors.
+
+### dmenuunicode
+
+Date created: 2026 Jan 17, Sat
+
+`dmenuunicode` was written in order to provide a user with a menu from which to copy emojis into the user's clipboard.
+
+`dmenuunicode` is a rewrite of an identically named script by LukeSmithxyz. It provides the same functionality, but is written for Bash. Despite this, this version of `dmenuunicode` is also POSIX-compliant.
 
 ### recompile-wm
 

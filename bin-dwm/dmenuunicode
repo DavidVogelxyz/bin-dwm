@@ -1,18 +1,27 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
-# The famous "get a menu of emojis to copy" script.
+# Name:     dmenuunicode
+# Author:   David Vogel <david@davidvogel.xyz>
+# Date:     2026 Jan 17, Sat
+# License:  GPL v3.0
+# Desc:     `dmenuunicode` provides a menu to copy emojis into the clipboard.
 
-# Get user selection via dmenu from emoji file.
-chosen=$(cut -d ';' -f1 ~/.local/share/emoji | dmenu -i -l 30 | sed "s/ .*//")
+main() {
+    # Pipe list of emojis into `dmenu`; get user input
+    local choice="$(cat ~/.local/share/emoji | dmenu -i -l 30)"
+    choice="${choice%% *}"
 
-# Exit if none chosen.
-[ -z "$chosen" ] && exit
+    # Exit if no emoji is chosen
+    ! [[ "$choice" ]] && exit
 
-# If you run this command with an argument, it will automatically insert the
-# character. Otherwise, show a message that the emoji has been copied.
-if [ -n "$1" ]; then
-        xdotool type "$chosen"
-else
-        printf "%s" "$chosen" | xclip -selection clipboard
-        notify-send "'$chosen' copied to clipboard." &
-fi
+    # If argument, insert the emoji
+    # If no argument, add emoji to clipboard
+    if [[ "$1" ]]; then
+        xdotool type "$choice"
+    else
+        printf "%s" "$choice" | xclip -selection clipboard
+        notify-send "\"$choice\" copied to clipboard!" &
+    fi
+}
+
+main
