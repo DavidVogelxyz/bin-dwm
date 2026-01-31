@@ -21,7 +21,7 @@ checkforecast() {
 
 # Get a weather report from 'wttr.in' and save it locally.
 getforecast() {
-    timeout --signal=1 2s curl -sf "$URL/$LOCATION" > "$WEATHERREPORT" \
+    timeout --signal=1 10s curl -sf "$URL/$LOCATION" > "$WEATHERREPORT" \
         || exit 1
 }
 
