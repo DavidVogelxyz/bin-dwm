@@ -8,7 +8,7 @@
 
 main() {
     # Pipe list of emojis into `dmenu`; get user input
-    local choice="$(cat ~/.local/share/emoji | dmenu -i -l 30)"
+    local choice="$(cat ~/.local/share/chars/* | dmenu -i -l 30)"
     choice="${choice%% *}"
 
     # Exit if no emoji is chosen
