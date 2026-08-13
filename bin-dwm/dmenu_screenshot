@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+# Name:     dmenu_screenshot
+# Author:   David Vogel <david@davidvogel.xyz>
+# Date:     2026 Aug 12, Wed
+# License:  GPL v3.0
+# Desc:     `dmenu_screenshot` makes it easy to save screenshots to the clipboard
+
+case "$(printf "📋 clipboard\n💾 file" | dmenu -i -p "Save to: ")" in
+    "📋 clipboard")
+        # Prompt for selection, save without cursor, and store it to clipboard
+        maim -s | xclip -selection clipboard -t image/png -i
+        ;;
+    "💾 file")
+        mkdir /tmp/screenshots
+        # Prompt for selection, save without cursor, and store it to file
+        maim -s "/tmp/screenshots/$(date +"%Y-%m-%d_%H-%M-%S").png"
+        ;;
+    *)
+        exit 1
+        ;;
+esac
