@@ -6,15 +6,43 @@
 # License:  GPL v3.0
 # Desc:     `dimmer` is a utility for dimming the screen. Also, "night light".
 
+usage() {
+    cat << EOF
+
+Usage: dimmer [-h] [-b BRIGHTNESS] [-c COLOR]
+
+Utility for changing X brightness levels, and enabling/disabling "night mode".
+
+options:
+    -h                  Show this help message, then exit
+    -b                  The brightness level (from 0 to 10)
+    -c                  The color mode ("day" or "night")
+
+examples:
+    to set the brightness to 100%:
+    dimmer -b 100
+
+    to set the brightness to 100% and enable "night mode":
+    dimmer -b 100 -c night
+
+EOF
+}
+
+# Prints provided message to STDERR; then, exits with return code `1`
+error() {
+    echo "$1" >&2 \
+        && exit 1
+}
+
 dim() {
     while read m; do
-        xrandr --output "$m" --brightness "$percent" --gamma "$gamma"
-    done <<< "$mon"
+        xrandr --output "$m" --brightness "$PERCENT" --gamma "$GAMMA"
+    done <<< "$MON"
 }
 
 notif() {
     # `-h string:bgcolor:#ebcb8b`
-    if [[ "$color" == "night" ]]; then
+    if [[ "$COLOR" == "night" ]]; then
         notify-send -e -t 3000 "Dimmer" "Night -- brightness adjusted to ${1}0%!"
     else
         notify-send -e -t 3000 "Dimmer" "Brightness adjusted to ${1}0%!"
@@ -22,33 +50,62 @@ notif() {
 }
 
 main() {
-    local percent gamma mon
-    local bright="$1"
-    local color="$2"
+    while getopts "hb:c:" OPT; do
+        case "$OPT" in
+            h)
+                usage
+                exit 0;;
+            b)
+                #if ! [[ "$OPTARG" =~ ^[0-9]+$ ]]; then
+                if ! (( 0 < OPTARG <= 10 )); then
+                    error "[ERROR]: \`$OPTARG\` is not an integer between 0 and 10. Exiting now."
+                fi
 
-    export DISPLAY=:0
-    mon=$(xrandr | grep " connected")
-    mon=(${mon[@]%% *})
+                local BRIGHT="$OPTARG"
+                ;;
+            c)
+                if [[ "$OPTARG" == "day" ]]; then
+                    local COLOR="day"
+                elif [[ "$OPTARG" == "night" ]]; then
+                    local COLOR="night"
+                else
+                    error "[ERROR]: \`$OPTARG\` should be either \"day\" or \"night\". Exiting now."
+                fi
+                ;;
+            *)
+                usage >&2
+                exit 1;;
+        esac
+    done
+
+    # Shifts the arguments such that `$1` represents the first argument after options
+    shift $((OPTIND - 1))
+
+    local PERCENT GAMMA MON
 
     # `xrandr` takes a decimal as an argument
     # if the brightness arg is 100%, then there is no need for decimal
     # otherwise, represent as decimal
-    if [[ "$bright" == 10 ]] || ! [[ "$bright" ]]; then
-        bright="10"
-        percent="1"
+    if (( BRIGHT == 10 )) || ! [[ "$BRIGHT" ]]; then
+        BRIGHT="10"
+        PERCENT="1"
     else
-        percent="0.${1}"
+        PERCENT="0.${BRIGHT}"
     fi
 
     # if the second arg exists, and is `night`, then set "night light"
     # otherwise, keep gamma levels the same
-    if [[ "$color" == "night" ]]; then
-        gamma="1.0:0.95:0.85"
+    if [[ "$COLOR" == "night" ]]; then
+        GAMMA="1.0:0.95:0.85"
     else
-        gamma="1.0:1.0:1.0"
+        GAMMA="1.0:1.0:1.0"
     fi
 
-    dim && notif "$bright" "$color"
+    export DISPLAY=:0
+    MON=$(xrandr | grep " connected")
+    MON=(${MON[@]%% *})
+
+    dim && notif "$BRIGHT" "$COLOR"
 }
 
 main "$@"
