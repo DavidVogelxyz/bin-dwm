@@ -6,40 +6,49 @@
 # License:  GPL v3.0
 # Desc:     `dimmer` is a utility for dimming the screen. Also, "night light".
 
-# `xrandr` takes a decimal as an argument
-# if the brightness arg is 100%, then there is no need for decimal
-# otherwise, represent as decimal
-if [[ "$1" == 10 ]]; then
-    percent="1"
-else
-    percent="0.${1}"
-fi
-
-# if the second arg exists, and is `night`, then set "night light"
-# otherwise, keep gamma levels the same
-if [[ "$2" == "night" ]]; then
-    gamma="1.0:0.95:0.85"
-else
-    gamma="1.0:1.0:1.0"
-fi
-
-export DISPLAY=:0
-mon=$(xrandr | grep " connected")
-mon=(${mon[@]%% *})
-
-notif() {
-    # `-h string:bgcolor:#ebcb8b`
-    if [[ "$2" == "night" ]]; then
-        notify-send -e -t 3000 "Dimmer" "Night -- brightness adjusted to ${1}0%!"
-    else
-        notify-send -e -t 3000 "Dimmer" "Brightness adjusted to ${1}0%!"
-    fi
-}
-
 dim() {
     while read m; do
         xrandr --output "$m" --brightness "$percent" --gamma "$gamma"
     done <<< "$mon"
 }
 
-dim && notif "$1" "$2"
+notif() {
+    # `-h string:bgcolor:#ebcb8b`
+    if [[ "$color" == "night" ]]; then
+        notify-send -e -t 3000 "Dimmer" "Night -- brightness adjusted to ${1}0%!"
+    else
+        notify-send -e -t 3000 "Dimmer" "Brightness adjusted to ${1}0%!"
+    fi
+}
+
+main() {
+    local percent gamma mon
+    local bright="$1"
+    local color="$2"
+
+    export DISPLAY=:0
+    mon=$(xrandr | grep " connected")
+    mon=(${mon[@]%% *})
+
+    # `xrandr` takes a decimal as an argument
+    # if the brightness arg is 100%, then there is no need for decimal
+    # otherwise, represent as decimal
+    if [[ "$bright" == 10 ]] || ! [[ "$bright" ]]; then
+        bright="10"
+        percent="1"
+    else
+        percent="0.${1}"
+    fi
+
+    # if the second arg exists, and is `night`, then set "night light"
+    # otherwise, keep gamma levels the same
+    if [[ "$color" == "night" ]]; then
+        gamma="1.0:0.95:0.85"
+    else
+        gamma="1.0:1.0:1.0"
+    fi
+
+    dim && notif "$bright" "$color"
+}
+
+main "$@"
